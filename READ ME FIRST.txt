@@ -1,0 +1,22 @@
+TOTAL WARFARE OVERHAUL v1.3.1 (Mod Manager mod folder)
+Mercenaries: Playground of Destruction (Xbox) - Recompiled 1.1.1
+
+1. Requires Mod Manager 2.0.0+ (Mod API 2). For enhanced airstrike blast/FX
+   (shockwave, scorch, slowdown, meltdown visual on nuke profiles), also enable
+   the Native Effects plugin (MercFx).
+2. This package includes a READY-BUILT mods\total_warfare.dll (x64, verified):
+   you can install directly without building. Source + build script + GitHub
+   Actions workflow are also included if you ever want to rebuild.
+3. Copy this entire "Total Warfare Overhaul" folder into your game's mods folder.
+4. Enable "Mod Manager", "Native Effects" (recommended), and "Total Warfare
+   Overhaul" in the selector, then LAUNCH MODDED. Configure in-game:
+   MODS > TOTAL WARFARE OVERHAUL.
+
+Fallback profile (UI only): mods\total_warfare\total-warfare.profile can be copied
+to Mod Manager\profiles\ for a settings page without the DLL (no runtime hooks).
+
+Still requires companion/runtime/data mods for: true C4 1-2km range and weapon/
+ballistic physics, parachute/jetpack, flyable custom jets/boats, and removing/
+unifying restricted zones (NoRestrictedZone scaffold in mods.zip is not a working
+patch). Dedicated FX mods (Real Nuke/MOAB + assets) may provide richer visuals for
+templates they bind first. See mods\total_warfare\README.txt.
