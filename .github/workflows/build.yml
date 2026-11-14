@@ -1,0 +1,19 @@
+name: Build Total Warfare DLL
+on:
+  workflow_dispatch:
+  push:
+    paths: ['**/total_warfare.c']
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build DLL
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvars64.bat"
+          cl /W4 /O2 /LD mods\total_warfare.c /Fe:total_warfare.dll /I mods
+      - uses: actions/upload-artifact@v4
+        with:
+          name: total_warfare-dll
+          path: total_warfare.dll
