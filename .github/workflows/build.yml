@@ -1,0 +1,42 @@
+# Builds mods/world_in_conflict.c into mods/world_in_conflict.dll with MSVC x64.
+# The artifact appears on the run page under "Artifacts" (world-in-conflict-dll).
+name: Build World in Conflict DLL
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mods/world_in_conflict.c'
+      - 'mods/mercenaries_mod.h'
+      - 'mods/mercfx.h'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build DLL
+        shell: cmd
+        working-directory: mods
+        run: |
+          cl /nologo /W4 /O2 /MT /LD world_in_conflict.c /I . /Fe:world_in_conflict.dll /link /MACHINE:X64 kernel32.lib libucrt.lib libvcruntime.lib
+
+      - name: Check exports
+        shell: cmd
+        working-directory: mods
+        run: dumpbin /exports world_in_conflict.dll | findstr /C:"mercenaries_mod_entry"
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-in-conflict-dll
+          path: mods/world_in_conflict.dll
+          if-no-files-found: error
