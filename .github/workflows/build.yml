@@ -1,0 +1,42 @@
+# Builds mods/total_warfare.c into mods/total_warfare.dll with MSVC x64.
+# The artifact appears on the run page under "Artifacts" (total_warfare-dll).
+name: Build Total Warfare DLL
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mods/total_warfare.c'
+      - 'mods/mercenaries_mod.h'
+      - 'mods/mercfx.h'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build DLL
+        shell: cmd
+        working-directory: mods
+        run: |
+          cl /nologo /W4 /O2 /MT /LD total_warfare.c /I . /Fe:total_warfare.dll /link /MACHINE:X64 kernel32.lib libucrt.lib libvcruntime.lib
+
+      - name: Check exports
+        shell: cmd
+        working-directory: mods
+        run: dumpbin /exports total_warfare.dll | findstr /C:"mercenaries_mod_entry"
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: total_warfare-dll
+          path: mods/total_warfare.dll
+          if-no-files-found: error
