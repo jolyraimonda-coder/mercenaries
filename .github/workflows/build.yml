@@ -1,0 +1,42 @@
+# Builds mods/big_nuke_80k.c into mods/big_nuke_80k.dll with MSVC x64.
+# The artifact appears on the run page under "Artifacts" (big-nuke-80k-dll).
+name: Build Big Nuke 80K DLL
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mods/big_nuke_80k.c'
+      - 'mods/mercenaries_mod.h'
+      - 'mods/mercfx.h'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build DLL
+        shell: cmd
+        working-directory: mods
+        run: |
+          cl /nologo /W4 /O2 /MT /LD big_nuke_80k.c /I . /Fe:big_nuke_80k.dll /link /MACHINE:X64 kernel32.lib libucrt.lib libvcruntime.lib
+
+      - name: Check exports
+        shell: cmd
+        working-directory: mods
+        run: dumpbin /exports big_nuke_80k.dll | findstr /C:"mercenaries_mod_entry"
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: big-nuke-80k-dll
+          path: mods/big_nuke_80k.dll
+          if-no-files-found: error
