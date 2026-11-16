@@ -1,0 +1,42 @@
+# Builds mods/m2_bunker_nuke.c into mods/m2_bunker_nuke.dll with MSVC x64.
+# The artifact appears on the run page under "Artifacts" (m2-bunker-nuke-dll).
+name: Build Merc2 Nuke Bunker Buster DLL
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mods/m2_bunker_nuke.c'
+      - 'mods/mercenaries_mod.h'
+      - 'mods/mercfx.h'
+      - '.github/workflows/build-m2-bunker-nuke.yml'
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build DLL
+        shell: cmd
+        working-directory: mods
+        run: |
+          cl /nologo /W4 /O2 /MT /LD m2_bunker_nuke.c /I . /Fe:m2_bunker_nuke.dll /link /MACHINE:X64 kernel32.lib libucrt.lib libvcruntime.lib
+
+      - name: Check exports
+        shell: cmd
+        working-directory: mods
+        run: dumpbin /exports m2_bunker_nuke.dll | findstr /C:"mercenaries_mod_entry"
+
+      - name: Upload DLL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-bunker-nuke-dll
+          path: mods/m2_bunker_nuke.dll
+          if-no-files-found: error
